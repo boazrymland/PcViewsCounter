@@ -38,7 +38,7 @@ class PageViewBookeeping extends CActiveRecord {
 		return array(
 			array('result_id', 'required'),
 			array('result_id, user_id', 'length', 'max' => 11),
-			array('ip_address', 'length', 'max' => 16),
+			//array('ip_address', 'length', 'max' => 16),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, result_id, ip_address, user_id', 'safe', 'on' => 'search'),
@@ -86,5 +86,61 @@ class PageViewBookeeping extends CActiveRecord {
 		return new CActiveDataProvider($this, array(
 			'criteria' => $criteria,
 		));
+	}
+
+	/**
+	 *
+	 */
+	/*public function beforeSave() {
+		if (isset($this->ip_address)) {
+			$this->ip_address = inet_pton($this->ip_address);
+		}
+		parent::beforeSave();
+	}*/
+
+	/**
+	 * Translate the ip address from the DB binary format to a human readable format (that is used also for comparison in the code level)
+	 */
+	protected function afterFind() {
+		$this->ip_address = inet_ntop($this->ip_address);
+		return parent::afterFind();
+	}
+
+	/*
+	 * Transform the ip address attribute from human readable format to binary, DB format (as used in the column data type)
+	 */
+	protected function beforeSave() {
+		$this->ip_address = inet_pton($this->ip_address);
+		return parent::beforeSave();
+	}
+
+	/**
+	 * after saving, revert back the ip address attribute to a human readable format once again.
+	 */
+	protected function afterSave() {
+		$this->ip_address = inet_ntop($this->ip_address);
+		return parent::afterSave();
+	}
+
+	/**
+	 *
+	 * Overriding parent implementation to allow transforming of the ip_address attribute from human readable format
+	 * to db level format (varbinary(16) is the column data type).
+	 *
+	 * @param array $attributes
+	 * @param mixed $condition
+	 * @param array $params
+	 *
+	 * @return PageViewBookeeping
+	 */
+	public function findByAttributes(array $attributes, $condition = '', array $params = array()) {
+		foreach ($attributes as $attr_name => $value) {
+			if ($attr_name === 'ip_address') {
+				// transform the IP from human readable format to varbinary
+				$attributes[$attr_name] = inet_pton($value);
+				break;
+			}
+		}
+		return parent::findByAttributes($attributes, $condition, $params);
 	}
 }

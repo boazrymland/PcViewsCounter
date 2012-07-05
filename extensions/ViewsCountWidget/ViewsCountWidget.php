@@ -154,7 +154,7 @@ class ViewsCountWidget extends CWidget {
 						return;
 					}
 					// here, means the user is an authenticated user AND no (unique) impression record was found for him. Make such a record.
-					$this->_createImpressionBookeepingRecord(Yii::app()->user->id, $this->_clientIpAddress, $this->statsRecord->id);
+					$ret = $this->_createImpressionBookeepingRecord(Yii::app()->user->id, $this->_clientIpAddress, $this->statsRecord->id);
 					$this->_addImpressionToCookie($this->modelClassName, $this->modelId);
 				}
 				else {
@@ -165,7 +165,7 @@ class ViewsCountWidget extends CWidget {
 					$bookeeping_record = PageViewBookeeping::model()->findByAttributes(array('ip_address' => $this->_clientIpAddress, 'result_id' => $this->statsRecord->id));
 					if (!$bookeeping_record) {
 						// create impression bookeeping record.
-						$this->_createImpressionBookeepingRecord(false, $this->_clientIpAddress, $this->statsRecord->id);
+						$ret = $this->_createImpressionBookeepingRecord(false, $this->_clientIpAddress, $this->statsRecord->id);
 					}
 					else {
 						// record exists. well, cookie has been updated already. Just return current counter and do not add another impression
@@ -209,10 +209,11 @@ class ViewsCountWidget extends CWidget {
 			$criteria = new CDbCriteria();
 			$criteria->compare("results_id", $this->statsRecord->id);
 			$user_id = Yii::app()->user->id;
+			$binary_formatted_ip_address = inet_pton($this->_clientIpAddress);
 			$condition = <<<EOC
 (
 user_id = {$user_id} OR
-ip_address = "{$this->_clientIpAddress}"
+ip_address = "{$binary_formatted_ip_address}"
 )
 EOC;
 			$criteria->addCondition($condition);
