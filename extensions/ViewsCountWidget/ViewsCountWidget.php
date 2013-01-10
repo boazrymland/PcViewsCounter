@@ -28,7 +28,7 @@ class ViewsCountWidget extends CWidget {
 	/* @var PageViewsStat */
 	public $statsRecord;
 
-	/* @var bool we use it internally to sync all on whether the widget was succesfully initialized or not */
+	/* @var bool we use it internally to sync all on whether the widget was successfully initialized or not */
 	private $_isInitialized = false;
 
 	/* @var string */
@@ -111,6 +111,8 @@ class ViewsCountWidget extends CWidget {
 					'display_only' => $this->dontCount,
 					'uniq_attr' => ($this->uniqueMode) ? 'count_uniq' : 'count_non_uniq',
 					'impression_url' => $impression_url,
+					'model_name' => $this->modelClassName,
+					'model_id' => $this->modelId,
 				)
 			);
 		}
