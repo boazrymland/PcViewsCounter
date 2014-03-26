@@ -24,19 +24,47 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-	class PcViewsCounterModule extends CWebModule {
-	public function init() {
+class PcViewsCounterModule extends CWebModule
+{
+    public function init()
+    {
 		// this method is called when the module is being created
 		// you may place code here to customize the module or the application
 	}
 
-	public function beforeControllerAction($controller, $action) {
+    public function beforeControllerAction($controller, $action)
+    {
 		if (parent::beforeControllerAction($controller, $action)) {
 			// this method is called before any module controller action is performed
 			// you may place customized code here
 			return true;
-		}
-		else
+        } else {
 			return false;
+        }
+    }
+
+
+    /**
+     * Returns the views count for a specific model.
+     * Note: no bookkeeping record is fine. It means zero impressions...
+     *
+     * @param string $model_name
+     * @param int $model_id
+     * @param bool $unique whether to return the unique count or non unique
+     *
+     * @return int the requested views counter
+     */
+    public static function getViewsCount($model_name, $model_id, $unique = true)
+    {
+        /* @var PageViewsStat $record */
+        $record = PageViewsStat::model()->findByAttributes(array('model_id' => $model_id, 'model_name' => $model_name));
+        if (!$record) {
+            return 0;
+        }
+
+        if ($unique) {
+            return $record->count_uniq;
+        }
+        return $record->count_non_uniq;
 	}
 }

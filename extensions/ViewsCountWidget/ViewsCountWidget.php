@@ -6,7 +6,7 @@
  */
 class ViewsCountWidget extends CWidget {
 	/* param name that will be sent via AJAX when a content impression is initiated from client side. Acronym of yet-another-content-impression :) */
-	const ADD_IMPRESSION_PARAMNAME = "YACE";
+	const ADD_IMPRESSION_PARAMNAME = "YACI";
 	const PERSISTENT_STORAGE_KEY_PREFIX = "ViewsCountWidget_saved_config__";
 	const COOKIE_NAME = "ViewsCount";
 	const COOKIE_EXPIRATION_LIFETIME = 31536000; // 1 year
@@ -251,7 +251,7 @@ EOC;
 		$data = unserialize($data);
 		if (array_key_exists($model_name . '-' . $model_id, $data)) {
 			$viewd_on = $data[$model_name . '-' . $model_id];
-			if (($viewd_on + self::COOKIE_DEFAULT_IMPRESSION_LIFETIME) < gmmktime()) {
+			if (($viewd_on + self::COOKIE_DEFAULT_IMPRESSION_LIFETIME) < time()) {
 				// it was viewed but a long time ago to be accounted as not viewed.
 				// clear this value from the cookie:
 				unset($data[$model_name . '-' . $model_id]);
@@ -290,7 +290,7 @@ EOC;
 			$cookie->value = unserialize($cookie->value);
 		}
 		// add the information to the cookie and save it
-		$cookie->value[$model_name . "-" . $model_id] = gmmktime();
+		$cookie->value[$model_name . "-" . $model_id] = time();
 		$cookie->value = Yii::app()->securityManager->encrypt(serialize($cookie->value), self::COOKIE_ENCRYPT_KEY);
 		Yii::app()->request->cookies[self::COOKIE_NAME] = $cookie;
 	}
@@ -330,7 +330,7 @@ EOC;
 	}
 
 	/**
-	 * Saves some configuration details in persistent storage. Config data should be an array, containing whatever
+	 * Saves the *global* views counter configuration details in persistent storage. Config data should be an array, containing whatever
 	 * you want.
 	 *
 	 * At the moment, we use application component 'cache' to store the persistent information. There are two good reasons

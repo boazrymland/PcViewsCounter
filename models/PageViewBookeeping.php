@@ -133,7 +133,7 @@ class PageViewBookeeping extends CActiveRecord {
 	 *
 	 * @return PageViewBookeeping
 	 */
-	public function findByAttributes(array $attributes, $condition = '', array $params = array()) {
+	public function findByAttributes($attributes, $condition = '', $params = array()) {
 		foreach ($attributes as $attr_name => $value) {
 			if ($attr_name === 'ip_address') {
 				// transform the IP from human readable format to varbinary
